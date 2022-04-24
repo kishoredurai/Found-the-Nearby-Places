@@ -5,9 +5,12 @@ import Login from "./components/Login/login";
 import LoginOTP from "./components/Login/loginotp";
 import LoginOTPverify from "./components/Login/loginotpverify";
 import Signup from "./components/Login/signup";
-import Placedetails from "./components/dashboard/placedetails";
+import Details from "./components/details/details";
+import Placemanage from "./components/ManageDetails/placemanage";
 
-import Bookmark from "./components/dashboard/bookmark";
+import Addplace from "./components/ManageDetails/addplace";
+import Recentactivity from "./components/recent activity/recentactivity";
+import Bookmark from "./components/bookmark/bookmark";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
@@ -46,8 +49,20 @@ const routeList = [
     element: <Home />,
   },
   {
-    path: "/place/user",
-    element: <Placedetails />,
+    path: "/details",
+    element: <Details />,
+  },
+  {
+    path: "/place/details/add",
+    element: <Addplace />,
+  },
+  {
+    path: "/place/details/manage",
+    element: <Placemanage />,
+  },
+  {
+    path: "/recent/activity",
+    element: <Recentactivity />,
   },
   {
     path: "/bookmark",

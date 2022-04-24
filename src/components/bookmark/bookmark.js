@@ -6,7 +6,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 
 import Modal from "react-bootstrap/Modal";
 
-import Bmindividual from "./bmindividual";
+import Bookmarkindividual from "./bookmarkindividual";
 import { Navigate, useNavigate } from "react-router-dom";
 
 const Bookmark = () => {
@@ -223,19 +223,23 @@ const Bookmark = () => {
             <div className="form-inline">
               <button
                 className="btn btn-outline-primary btn-sm my-2 my-sm-0"
-                onClick={() => navigate("/home")}
+                onClick={() => navigate("/recent/activity")}
               >
-                <i className="fa fa-home mx-1"></i>Home
+                <i className="fa fa-tasks mx-1"></i>Recent Activity
               </button>
               <button
                 className="btn btn-outline-danger btn-sm my-2 my-sm-0 mx-2"
-                onClick={() => navigate("/place/user/")}
+                onClick={() => navigate("/place/details/manage")}
               >
-                <i className="fa fa-map-marker mx-1"></i> Place
+                <i className="fa fa-map-marker mx-1"></i>Manage Place
               </button>
               <button
                 className="btn btn-outline-success btn-sm my-2 my-sm-0 "
                 type="submit"
+                onClick={() => {
+                  localStorage.setItem("loggedin", "");
+                  navigate("/");
+                }}
               >
                 <i className="fa fa-sign-out mx-1" aria-hidden="true"></i>Logout
               </button>
@@ -321,7 +325,17 @@ const Bookmark = () => {
 
           <div className="row p-4">
             <div className="col-sm">
-              <div style={{ overflow: "auto" }}>{display}</div>
+              <div style={{ overflow: "auto" }}>
+                {" "}
+                {display.length > 0 ? (
+                  display
+                ) : (
+                  <div class="alert alert-danger text-center" role="alert">
+                    <i className="fa fa-exclamation-triangle mx-2"></i> Sorry No
+                    Data Available
+                  </div>
+                )}
+              </div>
 
               <nav className="my-2 " aria-label="Page navigation example">
                 <ul className="pagination justify-content-center">
@@ -367,7 +381,10 @@ const Bookmark = () => {
             <div className="col-sm">
               <div>
                 {individualdata && dataset ? (
-                  <Bmindividual datas={changeName} data={individualdata} />
+                  <Bookmarkindividual
+                    datas={changeName}
+                    data={individualdata}
+                  />
                 ) : (
                   "sorry no data"
                 )}

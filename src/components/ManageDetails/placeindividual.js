@@ -124,40 +124,6 @@ const Placeindividual = (props) => {
     }
   }
 
-  // reload tha data after the bookin bookmark table
-
-  useEffect(() => {
-    const bookmarkCheck = (busid) => {
-      const Response = async () => {
-        fetch("http://localhost:8080/bookmark/check", {
-          method: "post",
-          body: JSON.stringify({
-            bookmark_business_id: busid,
-            bookmark_user_id: localStorage.getItem("loggedin"),
-          }),
-          headers: {
-            "Content-type": "application/json",
-          },
-        })
-          .then((e) => e.text())
-          .then((data) => {
-            try {
-              const response = JSON.parse(data);
-              if (response.bookmark_id) setIsbookmark(true);
-            } catch (error) {
-              setIsbookmark(false);
-            }
-          });
-      };
-      Response();
-    };
-    if (props?.data?.businessDetails?.business_id) {
-      bookmarkCheck(props?.data?.businessDetails?.business_id);
-    }
-    document.body.scrollTop = 0;
-    document.documentElement.scrollTop = 0;
-  }, [props.data]);
-
   // function for the geting the review details based on bus id
 
   useEffect(() => {
@@ -178,6 +144,8 @@ const Placeindividual = (props) => {
           });
       };
       Response();
+      document.body.scrollTop = 0;
+      document.documentElement.scrollTop = 0;
     };
     if (props?.data?.businessDetails?.business_id) {
       reviewget(props?.data?.businessDetails?.business_id);

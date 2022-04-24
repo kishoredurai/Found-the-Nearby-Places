@@ -12,7 +12,7 @@ import "react-toastify/dist/ReactToastify.css";
 import Placeindividual from "./placeindividual";
 import { Navigate, useNavigate } from "react-router-dom";
 
-const Placedetails = () => {
+const Placemanage = () => {
   const onSubmit = (e) => {
     e.preventDefault();
     console.log("refresh prevented");
@@ -644,21 +644,25 @@ const Placedetails = () => {
             <h5>User Added Place Details</h5>
             <div className="form-inline">
               <button
-                className="btn btn-outline-secondary btn-sm mx-2 my-2 my-sm-0"
-                onClick={() => navigate("/home")}
-              >
-                <i className="fa fa-home mx-1"></i>Home
-              </button>
-              <button
-                className="btn btn-outline-primary btn-sm mx-2 my-2 my-sm-0"
+                className="btn btn-outline-primary btn-sm my-2 my-sm-0"
                 onClick={() => navigate("/bookmark")}
               >
                 <i className="fa fa-bookmark mx-1"></i>My Bookmark
+              </button>
+              <button
+                className="btn btn-outline-secondary btn-sm my-2 mx-2 my-sm-0"
+                onClick={() => navigate("/recent/activity")}
+              >
+                <i className="fa fa-tasks mx-1"></i>Recent Activity
               </button>
 
               <button
                 className="btn btn-outline-success btn-sm my-2 my-sm-0 "
                 type="submit"
+                onClick={() => {
+                  localStorage.setItem("loggedin", "");
+                  navigate("/");
+                }}
               >
                 <i className="fa fa-sign-out mx-1" aria-hidden="true"></i>Logout
               </button>
@@ -747,7 +751,7 @@ const Placedetails = () => {
                 >
                   <button
                     className="btn btn-outline-primary btn-sm my-2 my-sm-0 mx-2"
-                    onClick={() => setLgShow(true)}
+                    onClick={() => navigate("/place/details/add")}
                   >
                     Add Details
                   </button>
@@ -758,7 +762,16 @@ const Placedetails = () => {
 
           <div className="row p-4">
             <div className="col-sm">
-              <div style={{ overflow: "auto" }}>{display}</div>
+              <div style={{ overflow: "auto" }}>
+                {display?.length > 0 ? (
+                  display
+                ) : (
+                  <div class="alert alert-danger text-center" role="alert">
+                    <i className="fa fa-exclamation-triangle mx-2"></i> Sorry No
+                    Data Available
+                  </div>
+                )}
+              </div>
 
               <nav className="my-2 " aria-label="Page navigation example">
                 <ul className="pagination justify-content-center">
@@ -822,4 +835,4 @@ const Placedetails = () => {
   );
 };
 
-export default Placedetails;
+export default Placemanage;

@@ -1,17 +1,39 @@
-import React, { useState, useEffect } from "react";
 import axios from "axios";
+import React, { useEffect } from "react";
 
+import { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import Modal from "react-bootstrap/Modal";
+import Detailsindividual from "./detailsindividual";
 
-import Individual from "./individual";
 import { Navigate, useNavigate } from "react-router-dom";
-const Home = () => {
+
+const Details = () => {
+  const navigate = useNavigate();
+
   const [backup, setBackupdata] = useState([]);
-  const [recom, setRecom] = useState([]);
+  const [data, setdata] = useState("");
+  const [term, setTerm] = useState([]);
+  const [dataset, setdataset] = useState([]);
+  const [toggle, setToggle] = useState(0);
+  const [individual, stindi] = useState([]);
+  const [butsearch, setButsearch] = useState(false);
+  const [individualdata, setIndividualdata] = useState({});
+
+  // used for searching
   const [initialget, setInitialget] = useState(false);
   const [inputValue, setInputValue] = useState("");
+
+  const [dd, setData] = useState([]);
+
+  const [individualIndex, setIndividualindex] = useState(0);
+  const [Index, setIndex] = useState({
+    start: 0,
+    end: 18,
+  });
+  const query = new URLSearchParams(window.location.search);
+  const token = query.get("id");
 
   useEffect(() => {
     // Code to be execute when input changed
@@ -20,8 +42,7 @@ const Home = () => {
         console.log(`empty`);
         const Response = async () => {
           const { data } = await axios.get(
-            "http://localhost:8080/business/get/" +
-              localStorage.getItem("loggedin")
+            "http://localhost:8080/business/detail/get/" + token
           );
           setTerm(data);
           setBackupdata(data);
@@ -34,7 +55,10 @@ const Home = () => {
         console.log("input " + inputValue);
         const Response = async () => {
           const { data } = await axios.get(
-            "http://localhost:8080/business/search?search=" + inputValue
+            "http://localhost:8080/place/details/" +
+              token +
+              "/search?search=" +
+              inputValue
           );
           setTerm(data);
           setBackupdata(data);
@@ -49,89 +73,53 @@ const Home = () => {
     setInputValue(e.target.value);
   };
 
-  const [filter, setFilter] = useState("Hotel");
+  // end of the search function
 
-  const [data, setdata] = useState("");
-  const [term, setTerm] = useState([]);
-  const [dataset, setdataset] = useState([]);
-  const [toggle, setToggle] = useState(0);
-  const [individual, stindi] = useState([]);
-  const [bookmark, setBookmark] = useState([]);
-  const navigate = useNavigate();
+  // function to refresh when data is changed
 
-  //Modal
-  const [lgShow, setLgShow] = useState(false);
-  const handleClose = () => setLgShow(false);
-
-  const [dd, setData] = useState([]);
-
-  const [individualIndex, setIndividualindex] = useState(0);
-  const [Index, setIndex] = useState({
-    start: 0,
-    end: 18,
-  });
-
-  // modal insert value
-
-  useEffect(() => {
+  const changeName = () => {
     const Response = async () => {
       const { data } = await axios.get(
-        "http://localhost:8080/business/get/" + localStorage.getItem("loggedin")
+        "http://localhost:8080/business/detail/get/" + token
       );
-      setTerm(data);
       setBackupdata(data);
+      setTerm(data);
+      data.map((x, index) => {
+        setIndividualdata(x);
+        setData(x);
+      });
     };
     Response();
-    setInitialget(true);
-  }, []);
+  };
+
+  // function to get the inital data
 
   useEffect(() => {
     const Response = async () => {
+      const query = new URLSearchParams(window.location.search);
+      const token = query.get("id");
+
       const { data } = await axios.get(
-        "http://localhost:8080/recommendation/home/" +
-          localStorage.getItem("loggedin")
+        "http://localhost:8080/business/detail/get/" + token
       );
-      setRecom(data);
+      data.map((x, i) => {
+        setIndividualdata(x);
+        setData(x);
+      });
+      setBackupdata(data);
+      setInitialget(true);
+
+      setTerm(data);
     };
     Response();
-    setInitialget(true);
   }, []);
 
-  const [individualdata, setIndividualdata] = useState({});
-
   useEffect(() => {
-    setdataset(term ? term.slice() : "SORRY NO DATA");
+    setdataset(term ? term.slice() : null);
     stindi(term ? term.slice() : null);
   }, [term]);
   let vvv = term;
-  let datas = vvv ? vvv.slice() : null;
-
-  useEffect(() => {
-    if (data) {
-      let vaa = term;
-      if (data === "") {
-        stindi(backup);
-        setdata(backup);
-      } else {
-        datas = vvv
-          ? term.filter((x) => {
-              return (
-                x.business_state === data ||
-                x.businessDetails.bussiness_name === data
-              );
-            })
-          : null;
-        setdataset(datas);
-        // setIndividualdata(datas ? datas[0] : null);
-
-        stindi(datas);
-      }
-    } else {
-      setdata(backup);
-      stindi(backup);
-      //setdataset(term ? term.badd_city : null);
-    }
-  }, [data]);
+  let datas = vvv?.slice();
 
   let mm;
   const search = (y = "") => {
@@ -146,8 +134,7 @@ const Home = () => {
 
   const searchall = () => {
     setdataset(backup);
-    stindi(backup);
-    // console.log(backup);
+    console.log(backup);
   };
 
   useEffect(() => {
@@ -157,35 +144,36 @@ const Home = () => {
     }
   }, [toggle, dataset, data]);
 
-  const display = dataset ? (
-    dataset.slice(Index.start, Index.end).map((x, index) => {
-      return (
-        <div
-          onClick={() => {
-            setIndividualdata(x);
-            setData(x);
-          }}
-          key={index}
-          className="card my-1"
-          style={{ width: "100%", cursor: "pointer" }}
-        >
-          <div className="card-body">
-            <h5 className="card-title">{x.businessDetails.business_name}</h5>
-            <h6 className="card-subtitle mb-2 text-muted">
-              {x.business_address}
-            </h6>
-            <p className="card-text">
-              {x.businessDetails.business_description}
-            </p>
-            <span className="badge bg-primary">{x.business_state}</span>
-            <span className="badge bg-success mx-2">{x.business_pincode}</span>
+  const display = dataset
+    ? dataset.slice(Index.start, Index.end).map((x, index) => {
+        return (
+          <div
+            onClick={() => {
+              setIndividualdata(x);
+              setData(x);
+            }}
+            key={index}
+            className="card my-1"
+            style={{ width: "100%", cursor: "pointer" }}
+          >
+            <div className="card-body">
+              <h5 className="card-title">{x.businessDetails.business_name}</h5>
+              <h6 className="card-subtitle mb-2 text-muted">
+                {x.business_address}
+              </h6>
+              <p className="card-text">
+                {x.businessDetails.business_description}
+              </p>
+              <span className="badge bg-primary">{x.business_state}</span>
+              <span className="badge bg-success mx-2">
+                {x.business_pincode}
+              </span>
+            </div>
           </div>
-        </div>
-      );
-    })
-  ) : (
-    <p>soory no data</p>
-  );
+        );
+      })
+    : null;
+
   useEffect(() => {
     setIndex({
       start: 0,
@@ -225,51 +213,6 @@ const Home = () => {
   };
 
   if (!localStorage.getItem("loggedin")) return <Navigate to="/" />;
-  const displayLeft = recom.map((x) => {
-    return (
-      <div className="px-2">
-        <div class="card row my-2 border border-success">
-          <div class="card-body row">
-            {x.review_rating >= 3 && (
-              <img
-                class="card-img-right col mx-auto"
-                src="https://www.freepnglogos.com/uploads/thumbs-up-png/thumbs-up-facebook-logo-png-transparent-11.png"
-                alt="Card image cap"
-                width="10"
-                height="100"
-              />
-            )}
-            {x.review_rating <= 3 && (
-              <img
-                class="card-img-right col mx-auto"
-                src="https://www.kindpng.com/picc/m/635-6350743_thumbs-up-down-png-thumbs-down-white-png.png"
-                alt="Card image cap"
-                width={50}
-                height={90}
-              />
-            )}
-
-            <div className="col">
-              <h6 class="card-text">
-                {x.businessDetails.business_name.substring(
-                  0,
-                  x.businessDetails.business_name.indexOf(" ") + 8
-                )}
-              </h6>
-
-              <span className="badge bg-primary ">
-                {x.businessDetails.business_category}
-              </span>
-              <div className="pt-2">
-                {" "}
-                <span className="badge bg-success ">⭐ {x.review_rating}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  });
 
   return (
     <>
@@ -283,27 +226,21 @@ const Home = () => {
                 height="30"
                 className="d-inline-block align-top"
               />
-              <span className="mx-2 ">App Name</span>
+              <span className="mx-2">App Name</span>
             </a>
-            <h5></h5>
+
             <div className="form-inline">
               <button
-                className="btn btn-outline-secondary btn-sm my-2 mx-2 my-sm-0"
-                onClick={() => navigate("/recent/activity")}
-              >
-                <i className="fa fa-tasks mx-1"></i>Recent Activity
-              </button>
-              <button
                 className="btn btn-outline-primary btn-sm my-2 my-sm-0"
-                onClick={() => navigate("/bookmark")}
+                onClick={() => navigate("/home")}
               >
-                <i className="fa fa-bookmark mx-1"></i>My Bookmark
+                <i className="fa fa-home mx-1"></i>Home
               </button>
               <button
                 className="btn btn-outline-danger btn-sm my-2 my-sm-0 mx-2"
-                onClick={() => navigate("/place/details/manage")}
+                onClick={() => navigate("/place/user/")}
               >
-                <i className="fa fa-map-marker mx-1"></i> Manage Place
+                <i className="fa fa-map-marker mx-1"></i> Place
               </button>
               <button
                 className="btn btn-outline-success btn-sm my-2 my-sm-0 "
@@ -325,14 +262,9 @@ const Home = () => {
                 id="searchQuery"
                 className="form-control mx-2"
                 type="text"
-                placeholder="Enter location name or business name"
-                value={inputValue}
+                placeholder="Enter location or business name"
                 onInput={inputChangeHandler}
-                // onChange={(e) => setdata(e.target.value)}
               />
-              {/* <button className="btn btn-secondary">
-                <i className="fa fa-search"></i>
-              </button> */}
             </div>
 
             <small className="form-text text-muted">Filter by category</small>
@@ -341,7 +273,6 @@ const Home = () => {
                 <input
                   type="radio"
                   name="search"
-                  value={filter}
                   id="all"
                   onChange={() => {
                     searchall();
@@ -352,6 +283,7 @@ const Home = () => {
                   All
                 </label>
               </div>
+
               <div className="d-flex align-items-center">
                 <input
                   id="fuel-station"
@@ -366,6 +298,7 @@ const Home = () => {
                   Fuelstation
                 </label>
               </div>
+
               <div className="d-flex align-items-center">
                 <input
                   type="radio"
@@ -380,6 +313,7 @@ const Home = () => {
                   Restaurant
                 </label>
               </div>
+
               <div className="d-flex align-items-center">
                 <input
                   type="radio"
@@ -387,7 +321,7 @@ const Home = () => {
                   id="hotel"
                   onChange={() => {
                     search("Hotel");
-
+                    setButsearch(!search);
                     setToggle(!toggle);
                   }}
                 ></input>
@@ -397,39 +331,10 @@ const Home = () => {
               </div>
             </div>
           </div>
-          {/* start */}
 
-          {/* end */}
           <div className="row p-4">
-            <div className="col-2">
-              <div className="card">
-                <div className="card-body">
-                  <h5 className="card-title pb-2">recommendation :</h5>
-                  {displayLeft}
-                  <div className="pt-2">
-                    <button
-                      className="btn btn-outline-primary btn-sm  w-100"
-                      onClick={() => {
-                        navigate("/recent/activity");
-                      }}
-                    >
-                      More Data
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-5">
-              <div style={{ overflow: "auto" }}>
-                {display.length > 0 ? (
-                  display
-                ) : (
-                  <div class="alert alert-danger text-center" role="alert">
-                    <i className="fa fa-exclamation-triangle mx-2"></i> Sorry No
-                    Data Available
-                  </div>
-                )}
-              </div>
+            <div className="col-sm">
+              <div style={{ overflow: "auto" }}>{display}</div>
 
               <nav className="my-2 " aria-label="Page navigation example">
                 <ul className="pagination justify-content-center">
@@ -472,14 +377,12 @@ const Home = () => {
               </nav>
             </div>
 
-            <div className="col-5">
+            <div className="col-sm">
               <div>
                 {individualdata && dataset ? (
-                  <Individual bookmark={bookmark} data={individualdata} />
+                  <Detailsindividual datas={changeName} data={individualdata} />
                 ) : (
-                  <div class="alert alert-danger" role="alert">
-                    Sorry No Data
-                  </div>
+                  "sorry no data"
                 )}
               </div>
             </div>
@@ -490,4 +393,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Details;

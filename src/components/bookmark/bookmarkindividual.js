@@ -4,16 +4,20 @@ import axios from "axios";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import Modal from "react-bootstrap/Modal";
+import { Navigate, useNavigate } from "react-router-dom";
 
-const Individual = (props) => {
-  const [isbookmark, setIsbookmark] = useState(false);
+const Bookmarkindividual = (props) => {
+  const navigate = useNavigate();
+
+  const [isbookmark, setIsbookmark] = useState(true);
   const [review, setIsReview] = useState([]);
-  const [userreview, setUserreview] = useState(false);
-  const [nonreviewcount, setnonreviewcount] = useState(0);
-  const [reviewcount, setreviewcount] = useState(0);
-
   const [ratings, setRatings] = useState([]);
   const [fuelprice, setFuelprice] = useState([]);
+
+  // counting user review
+
+  const [reviewcount, setreviewcount] = useState(0);
+  const [nonreviewcount, setnonreviewcount] = useState(0);
 
   //modal submit
   const [user_review, setuserreview] = useState("");
@@ -25,6 +29,9 @@ const Individual = (props) => {
   const handleShow = () => setShow(true);
 
   // review submit function
+  const routeChange = (page) => {
+    navigate(page);
+  };
 
   const submitlogin = (busid) => {
     fetch("http://localhost:8080/review", {
@@ -61,7 +68,6 @@ const Individual = (props) => {
         sum += 1;
       });
       ratings = ratings.map((e) => (e / sum) * 100);
-
       let count = 0;
       let ncount = 0;
       data.forEach((bus) => {
@@ -71,53 +77,16 @@ const Individual = (props) => {
           ncount++;
         }
       });
-      setnonreviewcount(ncount);
       setreviewcount(count);
+      setnonreviewcount(ncount);
       setRatings(ratings);
       setIsReview(data);
+      setIsbookmark(true);
     } else {
       setRatings([]);
       setIsReview([]);
     }
   }
-
-  useEffect(() => {
-    const bookmarkCheck = (busid) => {
-      if (props?.data?.bookmark?.bookmark_business_id === busid) {
-        setIsbookmark(true);
-      } else {
-        setIsbookmark(false);
-      }
-
-      // const Response = async () => {
-      //   fetch("http://localhost:8080/bookmark/check", {
-      //     method: "post",
-      //     body: JSON.stringify({
-      //       bookmark_business_id: busid,
-      //       bookmark_user_id: localStorage.getItem("loggedin"),
-      //     }),
-      //     headers: {
-      //       "Content-type": "application/json",
-      //     },
-      //   })
-      //     .then((e) => e.text())
-      //     .then((data) => {
-      //       try {
-      //         const response = JSON.parse(data);
-      //         if (response.bookmark_id) setIsbookmark(true);
-      //       } catch (error) {
-      //         setIsbookmark(false);
-      //       }
-      //     });
-      // };
-      // Response();
-    };
-    if (props?.data?.businessDetails?.business_id) {
-      bookmarkCheck(props?.data?.businessDetails?.business_id);
-    }
-    document.body.scrollTop = 0;
-    document.documentElement.scrollTop = 0;
-  }, [props.data]);
 
   // function for the geting the review details based on bus id
 
@@ -130,7 +99,6 @@ const Individual = (props) => {
           .then((e) => e.json())
           .then((data) => {
             reviewcalc(data);
-
             // try {
             //   const response = JSON.parse(data);
             //   if (response.bmid) setIsbookmark(true);
@@ -144,6 +112,8 @@ const Individual = (props) => {
     if (props?.data?.businessDetails?.business_id) {
       reviewget(props?.data?.businessDetails?.business_id);
     }
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
   }, [props.data]);
 
   //function to get the fuel price details based on the category
@@ -211,19 +181,12 @@ const Individual = (props) => {
           },
         }
       );
-      var bm = {
-        bookmark_business_id: props?.data.businessDetails?.business_id,
-        bookmark_user_id: localStorage.getItem("loggedin"),
-      };
-      if (response.data) {
-        props.data.bookmark = bm;
-      } else {
-        props.data.bookmark = null;
-      }
+      // setBmreload(true);
+      props.datas();
+
       setIsbookmark(response.data);
-      //  console.log(JSON.stringify(props.data));
     };
-    alert(props?.data.businessDetails?.business_id);
+    //alert("new" + props?.data.businessDetails?.bus_id);
     request();
   };
 
@@ -265,7 +228,6 @@ const Individual = (props) => {
                 onChange={(e) => setuserreview(e.target.value)}
                 id="review"
                 type="text"
-                max="100"
                 value={user_review}
                 placeholder="Enter review max(100)"
                 rows="3"
@@ -313,13 +275,15 @@ const Individual = (props) => {
                 ></i>
               </button>
             ) : (
-              <button
-                type="button"
-                onClick={toggleBookmark}
-                className="btn btn-secondary float-right"
-              >
-                <i className="fa fa-bookmark-o" aria-hidden="true"></i>
-              </button>
+              <>
+                <button
+                  type="button"
+                  onClick={toggleBookmark}
+                  className="btn btn-secondary float-right"
+                >
+                  <i className="fa fa-bookmark-o" aria-hidden="true"></i>
+                </button>
+              </>
             )}
           </div>
           <table className="table table-borderless">
@@ -469,7 +433,7 @@ const Individual = (props) => {
                       style={{ marginRight: "10px", marginTop: "10px" }}
                       className="card px-2 py-3 border border-primary"
                     >
-                      <h6>My Review:</h6>
+                      <h6>My Reviews:</h6>
 
                       {review.map((e, i) => (
                         <>
@@ -495,31 +459,32 @@ const Individual = (props) => {
                 ) : (
                   <></>
                 )}
+                {nonreviewcount > 0 && (
+                  <div
+                    style={{ marginRight: "10px", marginTop: "10px" }}
+                    className="card px-2 py-3 border border-success"
+                  >
+                    {review.map((e, i) => (
+                      <>
+                        {parseInt(localStorage.getItem("loggedin")) !=
+                          e.review_user_id && (
+                          <div
+                            key={i}
+                            className="d-flex align-items-center text-secondary"
+                          >
+                            <span className="d-flex align-items-center badge badge-pill bg-primary">
+                              {e.review_rating} ⭐
+                            </span>
 
-                <div
-                  style={{ marginRight: "10px", marginTop: "10px" }}
-                  className="card px-2 py-3 border border-success"
-                >
-                  {review.map((e, i) => (
-                    <>
-                      {parseInt(localStorage.getItem("loggedin")) !=
-                        e.review_user_id && (
-                        <div
-                          key={i}
-                          className="d-flex align-items-center text-secondary"
-                        >
-                          <span className="d-flex align-items-center badge badge-pill bg-primary">
-                            {e.review_rating} ⭐
-                          </span>
-
-                          <p className="my-1 mx-3 flex-1">
-                            {e.review_description}
-                          </p>
-                        </div>
-                      )}
-                    </>
-                  ))}
-                </div>
+                            <p className="my-1 mx-3 flex-1">
+                              {e.review_description}
+                            </p>
+                          </div>
+                        )}
+                      </>
+                    ))}
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -531,4 +496,4 @@ const Individual = (props) => {
   );
 };
 
-export default Individual;
+export default Bookmarkindividual;

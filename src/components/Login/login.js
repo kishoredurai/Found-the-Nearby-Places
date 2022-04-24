@@ -16,11 +16,12 @@ const Login = () => {
 
   /// block form on submit
 
-  const [status, setStatus] = useState(false);
+  const [status, setStatus] = useState(true);
 
   const onSubmit = (e) => {
     e.preventDefault();
     setStatus(true);
+    submitlogin();
   };
 
   // notification
@@ -157,7 +158,10 @@ const Login = () => {
                 <div className="text-center text-lg-start mt-4 pt-2">
                   <button
                     type="submit"
-                    onClick={submitlogin}
+                    // onClick={() => {
+                    //   console.log("click");
+                    //   onSubmit();
+                    // }}
                     className="btn btn-primary btn-lg w-100"
                     style={{ paddingLeft: "2.5rem", paddingRight: "2.5rem" }}
                   >
