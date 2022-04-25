@@ -18,14 +18,48 @@ const Addplace = () => {
 
   // state field
 
-  const [datas, setDatas] = useState("Tamilnadu");
+  const [datas, setDatas] = useState("select");
 
-  const states = ["select", "Assam", "Tamilnadu"];
+  const states = ["select", "Assam", "TamilNadu"];
 
   const districts = [
     {
-      states: "Tamilnadu",
-      Dis: ["Select", "Namakkal", "Karur", "salem", "chennai", "erode"],
+      states: "TamilNadu",
+      Dis: [
+        "ariyalur",
+        "chengalpet",
+        "chennai",
+        "coimbatore",
+        "cuddalore",
+        "dharmapuri",
+        "dindigul",
+        "erode",
+        "kallakurichi",
+        "kanniyakumari",
+        "karur",
+        "krishnagiri",
+        "madurai",
+        "nagapattinam",
+        "namakkal",
+        "nilgiris",
+        "perambalur",
+        "pudukkottai",
+        "ramanathapuram",
+        "salem",
+        "sivaganga",
+        "thanjavur",
+        "theni",
+        "thoothukudi",
+        "thiruchirappalli",
+        "tirunelveli",
+        "tiruppur",
+        "tiruvallur",
+        "tiruvannamalai",
+        "tiruvarur",
+        "vellore",
+        "viluppuram",
+        "virudhunagar",
+      ],
     },
     { states: "Assam", Dis: ["MAAAA", "nini", "ndcxk", "dhcnk"] },
     {
@@ -105,7 +139,7 @@ const Addplace = () => {
       pincode &&
       discription
     ) {
-      if (fulladdress.includes(",")) {
+      if (fulladdress.charAt(fulladdress.length - 1) === ",") {
         alerts = false;
         notifydanger("Address contain special character . remove it");
       } else {
@@ -178,7 +212,7 @@ const Addplace = () => {
         if (!data["message"]) {
           if (out === 1) {
             notifyinsert();
-            navigate("/details?id=" + data.business_address_id);
+            navigate("/place/details?id=" + data.business_address_id);
             //alert(data.business_address_id);
           } else {
             notifyinsert();
@@ -216,6 +250,8 @@ const Addplace = () => {
     setemail("");
     setmobile("");
     setpincode("");
+    setDatas("select");
+    setwebsite("");
   }
 
   if (!localStorage.getItem("loggedin")) return <Navigate to="/" />;
@@ -238,19 +274,23 @@ const Addplace = () => {
             <div className="form-inline">
               <button
                 className="btn btn-outline-primary btn-sm my-2 my-sm-0"
-                onClick={() => navigate("/home")}
+                onClick={() => navigate("/bookmark")}
               >
-                <i className="fa fa-home mx-1"></i>Home
+                <i className="fa fa-bookmark mx-1"></i>My Bookmark
               </button>
               <button
                 className="btn btn-outline-danger btn-sm my-2 my-sm-0 mx-2"
                 onClick={() => navigate("/place/details/manage")}
               >
-                <i className="fa fa-map-marker mx-1"></i> Place
+                <i className="fa fa-map-marker mx-1"></i> Manage Place
               </button>
               <button
                 className="btn btn-outline-success btn-sm my-2 my-sm-0 "
                 type="submit"
+                onClick={() => {
+                  localStorage.setItem("loggedin", "");
+                  navigate("/");
+                }}
               >
                 <i className="fa fa-sign-out mx-1" aria-hidden="true"></i>Logout
               </button>

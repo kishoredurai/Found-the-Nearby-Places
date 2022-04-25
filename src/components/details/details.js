@@ -232,15 +232,15 @@ const Details = () => {
             <div className="form-inline">
               <button
                 className="btn btn-outline-primary btn-sm my-2 my-sm-0"
-                onClick={() => navigate("/home")}
+                onClick={() => navigate("/bookmark")}
               >
-                <i className="fa fa-home mx-1"></i>Home
+                <i className="fa fa-bookmark mx-1"></i>My Bookmark
               </button>
               <button
                 className="btn btn-outline-danger btn-sm my-2 my-sm-0 mx-2"
-                onClick={() => navigate("/place/user/")}
+                onClick={() => navigate("/place/details/manage")}
               >
-                <i className="fa fa-map-marker mx-1"></i> Place
+                <i className="fa fa-map-marker mx-1"></i> Manage Place
               </button>
               <button
                 className="btn btn-outline-success btn-sm my-2 my-sm-0 "

@@ -183,7 +183,6 @@ const Bookmarkindividual = (props) => {
       );
       // setBmreload(true);
       props.datas();
-
       setIsbookmark(response.data);
     };
     //alert("new" + props?.data.businessDetails?.bus_id);

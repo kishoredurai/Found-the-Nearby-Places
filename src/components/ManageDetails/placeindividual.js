@@ -16,6 +16,78 @@ const Placeindividual = (props) => {
   const [ratings, setRatings] = useState([]);
   const [fuelprice, setFuelprice] = useState([]);
 
+  // state field
+
+  const [datas, setDatas] = useState("select");
+
+  const states = ["select", "Assam", "TamilNadu"];
+
+  const districts = [
+    {
+      states: "TamilNadu",
+      Dis: [
+        "ariyalur",
+        "chengalpet",
+        "chennai",
+        "coimbatore",
+        "cuddalore",
+        "dharmapuri",
+        "dindigul",
+        "erode",
+        "kallakurichi",
+        "kanniyakumari",
+        "karur",
+        "krishnagiri",
+        "madurai",
+        "nagapattinam",
+        "namakkal",
+        "nilgiris",
+        "perambalur",
+        "pudukkottai",
+        "ramanathapuram",
+        "salem",
+        "sivaganga",
+        "thanjavur",
+        "theni",
+        "thoothukudi",
+        "thiruchirappalli",
+        "tirunelveli",
+        "tiruppur",
+        "tiruvallur",
+        "tiruvannamalai",
+        "tiruvarur",
+        "vellore",
+        "viluppuram",
+        "virudhunagar",
+      ],
+    },
+    { states: "Assam", Dis: ["MAAAA", "nini", "ndcxk", "dhcnk"] },
+    {
+      states: "select",
+      Dis: ["select"],
+    },
+  ];
+
+  const displayData = districts.filter((x) => {
+    return x.states == datas;
+  });
+
+  const changeHandler = (e) => {
+    setDatas(e.target.value);
+  };
+
+  const displays = displayData
+    ? displayData[0].Dis.map((x, i) => {
+        return (
+          <option key={i} value={x}>
+            {x}
+          </option>
+        );
+      })
+    : null;
+
+  //end of the state and district dropdown
+
   // review
   const [nonreviewcount, setnonreviewcount] = useState(0);
   const [reviewcount, setreviewcount] = useState(0);
@@ -39,9 +111,9 @@ const Placeindividual = (props) => {
   const [fulladdress, setFullAddress] = useState("");
   const [city, setcity] = useState("");
   const [district, setdistrict] = useState("");
+  const [website, setwebsite] = useState("");
   const [state, setstate] = useState("");
   const [pincode, setpincode] = useState("");
-  const [distance, setdistance] = useState("");
   const [discription, setdiscription] = useState("");
 
   //business edit modal Modal
@@ -216,7 +288,7 @@ const Placeindividual = (props) => {
           notifyinsert("Details Deleted Successfully !!");
           //props.data = data;
           //setTerm(data);
-
+          props.datas();
           console.log(data);
           handlesClose();
           //alert(data);
@@ -280,8 +352,20 @@ const Placeindividual = (props) => {
     setemail(props?.data?.businessDetails?.business_mail);
     settiming(props?.data?.businessDetails?.business_timing);
     setcategory(props?.data?.businessDetails?.business_category);
-    setFullAddress(props?.data?.business_address);
+
+    var temp = props?.data?.business_address;
+    var nameArr = temp.split(",");
+    console.log(nameArr);
+    //alert(nameArr[nameArr.length - 1]);
+    var districts = nameArr[nameArr.length - 1].split("-");
+    var citys = nameArr[nameArr.length - 2];
+    setdistrict(districts[0].trim());
+    setcity(citys);
+    var address = temp.split(citys);
+    setFullAddress(address[0]);
+    setwebsite(props?.data?.businessDetails?.business_website);
     setstate(props?.data?.business_state);
+    setDatas(props?.data?.business_state);
     setpincode(props?.data?.business_pincode);
     setdiscription(props?.data?.businessDetails.business_description);
     //alert();
@@ -448,6 +532,19 @@ const Placeindividual = (props) => {
             </div>
 
             <div className="form-group">
+              <label>Website Details</label>
+              <input
+                type="text"
+                className="form-control"
+                id="fulladdress"
+                required
+                value={website}
+                onChange={(e) => setwebsite(e.target.value)}
+                placeholder="Website Link"
+              />
+            </div>
+
+            <div className="form-group">
               <label>Address Details</label>
               <input
                 type="text"
@@ -478,15 +575,17 @@ const Placeindividual = (props) => {
               <div className="col">
                 <div className="form-group my-2">
                   <label>District</label>
-                  <input
+                  <select
                     type="text"
                     className="form-control"
                     id="district"
                     value={district}
                     required
                     onChange={(e) => setdistrict(e.target.value)}
-                    placeholder="Disctrict"
-                  />
+                    placeholder="District"
+                  >
+                    {displays}
+                  </select>
                 </div>
               </div>
             </div>
@@ -501,10 +600,14 @@ const Placeindividual = (props) => {
                     name="state"
                     required
                     value={state}
-                    onChange={(e) => setstate(e.target.value)}
+                    onChange={(e) => {
+                      changeHandler(e);
+                      setstate(e.target.value);
+                    }}
                   >
-                    <option></option>
-                    <option>TamilNadu</option>
+                    {states?.map((x, i) => {
+                      return <option key={i}>{x}</option>;
+                    })}
                   </select>
                 </div>
               </div>
@@ -526,20 +629,6 @@ const Placeindividual = (props) => {
             </div>
 
             <div className="row my-2">
-              <div className="col">
-                <div className="form-group">
-                  <label>Distance</label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    id="distance"
-                    value={distance}
-                    required
-                    onChange={(e) => setdistance(e.target.value)}
-                    placeholder="Distance from the city (Km)"
-                  />
-                </div>
-              </div>
               <div className="col">
                 <div className="form-group">
                   <label>Description</label>

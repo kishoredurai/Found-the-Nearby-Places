@@ -233,16 +233,16 @@ const Home = () => {
             {x.review_rating >= 3 && (
               <img
                 class="card-img-right col mx-auto"
-                src="https://www.freepnglogos.com/uploads/thumbs-up-png/thumbs-up-facebook-logo-png-transparent-11.png"
+                src="https://media0.giphy.com/media/QsIgbvJpKUqpGtmEHJ/giphy.gif?cid=6c09b9522gunpelnzhk19mlbkcw678bctj5qflnwyvj3ym48&rid=giphy.gif&ct=s"
                 alt="Card image cap"
-                width="10"
-                height="100"
+                width={50}
+                height={80}
               />
             )}
             {x.review_rating <= 3 && (
               <img
                 class="card-img-right col mx-auto"
-                src="https://www.kindpng.com/picc/m/635-6350743_thumbs-up-down-png-thumbs-down-white-png.png"
+                src="https://media.baamboozle.com/uploads/images/292439/1620140826_153475_gif-url.gif"
                 alt="Card image cap"
                 width={50}
                 height={90}
@@ -254,7 +254,8 @@ const Home = () => {
                 {x.businessDetails.business_name.substring(
                   0,
                   x.businessDetails.business_name.indexOf(" ") + 8
-                )}
+                )}{" "}
+                ...
               </h6>
 
               <span className="badge bg-primary ">
@@ -287,12 +288,12 @@ const Home = () => {
             </a>
             <h5></h5>
             <div className="form-inline">
-              <button
+              {/* <button
                 className="btn btn-outline-secondary btn-sm my-2 mx-2 my-sm-0"
                 onClick={() => navigate("/recent/activity")}
               >
                 <i className="fa fa-tasks mx-1"></i>Recent Activity
-              </button>
+              </button> */}
               <button
                 className="btn btn-outline-primary btn-sm my-2 my-sm-0"
                 onClick={() => navigate("/bookmark")}
@@ -404,7 +405,7 @@ const Home = () => {
             <div className="col-2">
               <div className="card">
                 <div className="card-body">
-                  <h5 className="card-title pb-2">recommendation :</h5>
+                  <h5 className="card-title pb-2">Recent Reviews :</h5>
                   {displayLeft}
                   <div className="pt-2">
                     <button
@@ -424,10 +425,15 @@ const Home = () => {
                 {display.length > 0 ? (
                   display
                 ) : (
-                  <div class="alert alert-danger text-center" role="alert">
-                    <i className="fa fa-exclamation-triangle mx-2"></i> Sorry No
-                    Data Available
-                  </div>
+                  <>
+                    {/* <div
+                      className="alert alert-danger text-center"
+                      role="alert"
+                    >
+                      <i className="fa fa-exclamation-triangle mx-2"></i> Sorry
+                      No Data Available
+                    </div> */}
+                  </>
                 )}
               </div>
 

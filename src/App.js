@@ -49,7 +49,7 @@ const routeList = [
     element: <Home />,
   },
   {
-    path: "/details",
+    path: "/place/details",
     element: <Details />,
   },
   {
