@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  web:
+    build: ./frontend
+    ports:
+      - 3001:3000
+    volumes:
+      - ./frontend:/app
+  # web-tests:
+  #   image: vidly_web
+  #   volumes:
+  #     - ./frontend:/app
+  #   command: npm test
